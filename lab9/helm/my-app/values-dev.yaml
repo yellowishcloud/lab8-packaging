@@ -1,0 +1,32 @@
+replicaCount: 1
+
+image:
+  repository: nginx
+  tag: "1.25.1-alpine"
+  pullPolicy: IfNotPresent
+
+service:
+  type: ClusterIP
+  port: 80
+  targetPort: 80
+
+config:
+  appName: my-app-dev
+  environment: dev
+
+secret:
+  username: devadmin
+  password: devpass
+
+ingress:
+  enabled: false
+  className: nginx
+  host: dev.my-app.local
+  path: /
+  pathType: Prefix
+
+networkPolicy:
+  enabled: true
+
+rbac:
+  enabled: true

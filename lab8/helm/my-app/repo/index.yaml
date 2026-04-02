@@ -1,0 +1,23 @@
+apiVersion: v1
+entries:
+  my-app:
+  - apiVersion: v2
+    appVersion: 1.0.0
+    created: "2026-04-02T09:33:23.498929655+05:00"
+    dependencies:
+    - condition: postgresql.enabled
+      name: postgresql
+      repository: https://charts.bitnami.com/bitnami
+      version: 16.7.27
+    - condition: redis.enabled
+      name: redis
+      repository: https://charts.bitnami.com/bitnami
+      version: 19.0.0
+    description: Universal Helm chart for Lab 8 application packaging
+    digest: 1dcde636fe7dc056facf4450d4f30b8ab6ad52e87f0378ca49e553cbdb551411
+    name: my-app
+    type: application
+    urls:
+    - https://yellowishcloud.github.io/lab8/my-app-0.1.0.tgz
+    version: 0.1.0
+generated: "2026-04-02T09:33:23.420203276+05:00"

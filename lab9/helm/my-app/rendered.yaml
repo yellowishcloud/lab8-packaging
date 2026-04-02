@@ -1,0 +1,157 @@
+---
+# Source: my-app/templates/networkpolicy.yaml
+apiVersion: networking.k8s.io/v1
+kind: NetworkPolicy
+metadata:
+  name: my-app
+  labels:
+    app.kubernetes.io/name: my-app
+    app.kubernetes.io/instance: my-release
+    app.kubernetes.io/managed-by: Helm
+    helm.sh/chart: my-app-0.1.0
+spec:
+  podSelector:
+    matchLabels:
+      app: my-app
+  policyTypes:
+    - Ingress
+    - Egress
+  ingress:
+    - {}
+  egress:
+    - {}
+---
+# Source: my-app/templates/secret.yaml
+apiVersion: v1
+kind: Secret
+metadata:
+  name: my-app-secret
+  labels:
+    app.kubernetes.io/name: my-app
+    app.kubernetes.io/instance: my-release
+    app.kubernetes.io/managed-by: Helm
+    helm.sh/chart: my-app-0.1.0
+type: Opaque
+stringData:
+  username: "admin"
+  password: "admin123"
+---
+# Source: my-app/templates/configmap.yaml
+apiVersion: v1
+kind: ConfigMap
+metadata:
+  name: my-app-config
+  labels:
+    app.kubernetes.io/name: my-app
+    app.kubernetes.io/instance: my-release
+    app.kubernetes.io/managed-by: Helm
+    helm.sh/chart: my-app-0.1.0
+data:
+  appName: "my-app"
+  environment: "dev"
+---
+# Source: my-app/templates/role.yaml
+apiVersion: rbac.authorization.k8s.io/v1
+kind: Role
+metadata:
+  name: my-app
+  labels:
+    app.kubernetes.io/name: my-app
+    app.kubernetes.io/instance: my-release
+    app.kubernetes.io/managed-by: Helm
+    helm.sh/chart: my-app-0.1.0
+rules:
+  - apiGroups: [""]
+    resources: ["pods", "services", "configmaps", "secrets"]
+    verbs: ["get", "list", "watch"]
+---
+# Source: my-app/templates/rolebinding.yaml
+apiVersion: rbac.authorization.k8s.io/v1
+kind: RoleBinding
+metadata:
+  name: my-app
+  labels:
+    app.kubernetes.io/name: my-app
+    app.kubernetes.io/instance: my-release
+    app.kubernetes.io/managed-by: Helm
+    helm.sh/chart: my-app-0.1.0
+subjects:
+  - kind: ServiceAccount
+    name: default
+    namespace: lab8
+roleRef:
+  kind: Role
+  name: my-app
+  apiGroup: rbac.authorization.k8s.io
+---
+# Source: my-app/templates/service.yaml
+apiVersion: v1
+kind: Service
+metadata:
+  name: my-app
+  labels:
+    app.kubernetes.io/name: my-app
+    app.kubernetes.io/instance: my-release
+    app.kubernetes.io/managed-by: Helm
+    helm.sh/chart: my-app-0.1.0
+spec:
+  type: ClusterIP
+  selector:
+    app: my-app
+  ports:
+    - port: 80
+      targetPort: 80
+---
+# Source: my-app/templates/deployment.yaml
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: my-app
+  labels:
+    app.kubernetes.io/name: my-app
+    app.kubernetes.io/instance: my-release
+    app.kubernetes.io/managed-by: Helm
+    helm.sh/chart: my-app-0.1.0
+spec:
+  replicas: 2
+  selector:
+    matchLabels:
+      app: my-app
+  template:
+    metadata:
+      labels:
+        app: my-app
+        app.kubernetes.io/name: my-app
+        app.kubernetes.io/instance: my-release
+        app.kubernetes.io/managed-by: Helm
+        helm.sh/chart: my-app-0.1.0
+    spec:
+      containers:
+        - name: app
+          image: "nginx:1.25.1-alpine"
+          imagePullPolicy: IfNotPresent
+          ports:
+            - containerPort: 80
+          env:
+            - name: APP_NAME
+              valueFrom:
+                configMapKeyRef:
+                  name: my-app-config
+                  key: appName
+            - name: ENVIRONMENT
+              valueFrom:
+                configMapKeyRef:
+                  name: my-app-config
+                  key: environment
+            - name: APP_USERNAME
+              valueFrom:
+                secretKeyRef:
+                  name: my-app-secret
+                  key: username
+            - name: APP_PASSWORD
+              valueFrom:
+                secretKeyRef:
+                  name: my-app-secret
+                  key: password
+          resources:
+            {}

@@ -1,0 +1,46 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: {{ include "my-app.fullname" . }}
+  labels:
+    {{- include "my-app.labels" . | nindent 4 }}
+spec:
+  replicas: {{ .Values.replicaCount }}
+  selector:
+    matchLabels:
+      app: {{ include "my-app.name" . }}
+  template:
+    metadata:
+      labels:
+        app: {{ include "my-app.name" . }}
+        {{- include "my-app.labels" . | nindent 8 }}
+    spec:
+      containers:
+        - name: app
+          image: "{{ .Values.image.repository }}:{{ .Values.image.tag }}"
+          imagePullPolicy: {{ .Values.image.pullPolicy }}
+          ports:
+            - containerPort: {{ .Values.service.targetPort }}
+          env:
+            - name: APP_NAME
+              valueFrom:
+                configMapKeyRef:
+                  name: {{ include "my-app.fullname" . }}-config
+                  key: appName
+            - name: ENVIRONMENT
+              valueFrom:
+                configMapKeyRef:
+                  name: {{ include "my-app.fullname" . }}-config
+                  key: environment
+            - name: APP_USERNAME
+              valueFrom:
+                secretKeyRef:
+                  name: {{ include "my-app.fullname" . }}-secret
+                  key: username
+            - name: APP_PASSWORD
+              valueFrom:
+                secretKeyRef:
+                  name: {{ include "my-app.fullname" . }}-secret
+                  key: password
+          resources:
+{{ toYaml .Values.resources | indent 12 }}
