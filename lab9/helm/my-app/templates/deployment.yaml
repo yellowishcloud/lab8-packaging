@@ -22,11 +22,11 @@ spec:
           ports:
             - containerPort: {{ .Values.service.targetPort }}
           env:
-            - name: APP_NAME
+            - name: PASSWORD
               valueFrom:
                 configMapKeyRef:
-                  name: {{ include "my-app.fullname" . }}-config
-                  key: appName
+                  name: my-app-secret
+                  key: password
             - name: ENVIRONMENT
               valueFrom:
                 configMapKeyRef:
