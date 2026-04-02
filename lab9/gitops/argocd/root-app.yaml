@@ -6,7 +6,7 @@ metadata:
 spec:
   project: default
   source:
-    repoURL: https://github.com/YOUR_GITHUB_USERNAME/lab8-packaging.git
+    repoURL: https://github.com/yellowishcloud/lab8-packaging.git
     targetRevision: main
     path: lab9/gitops/apps
   destination:
