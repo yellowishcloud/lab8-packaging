@@ -24,9 +24,9 @@ spec:
           env:
             - name: PASSWORD
               valueFrom:
-                configMapKeyRef:
-                  name: my-app-secret
+                secretKeyRef:
                   key: password
+                  name: my-app-secret
             - name: ENVIRONMENT
               valueFrom:
                 configMapKeyRef:
